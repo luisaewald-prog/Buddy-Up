@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buddy Up - Private Demo</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: #f4f6f9; color: #333; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+    
+    /* Login / Access Screen */
+    .access-container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 100%; margin-top: 50px; }
+    .access-container h2 { color: #4A90E2; margin-bottom: 10px; }
+    .access-container p { font-size: 0.9rem; color: #666; margin-bottom: 20px; }
+    .access-input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 15px; font-size: 1rem; text-align: center; }
+    .error-access { color: #e74c3c; font-size: 0.85rem; display: none; margin-bottom: 10px; }
+
+    /* App Screen (Hidden by default) */
+    .app-screen { display: none; width: 100%; max-width: 1000px; flex-direction: column; align-items: center; }
+    header { text-align: center; margin-bottom: 25px; }
+    header h1 { color: #4A90E2; font-size: 2.2rem; }
+    header p { color: #666; font-size: 1rem; margin-top: 5px; }
+
+    .badge-private { background-color: #e74c3c; color: white; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; display: inline-block; margin-bottom: 10px; }
+
+    .card-container { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; width: 100%; }
+    .profile-card { background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 280px; padding: 20px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; }
+    .profile-img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin: 0 auto 15px; border: 3px solid #4A90E2; }
+    .profile-name { font-size: 1.3rem; font-weight: bold; color: #2C3E50; }
+    .profile-info { font-size: 0.85rem; color: #7F8C8D; margin-bottom: 10px; }
+    .profile-bio { font-size: 0.95rem; color: #555; margin-bottom: 15px; line-height: 1.4; }
+    
+    .btn { background-color: #4A90E2; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; width: 100%; }
+    .btn:hover { background-color: #357ABD; }
+
+    /* Chat Modal */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
+    .modal-content { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; display: flex; flex-direction: column; gap: 10px; }
+    .chat-box { height: 200px; border: 1px solid #ddd; padding: 10px; overflow-y: auto; border-radius: 6px; background: #fafafa; font-size: 0.9rem; }
+    .chat-input-group { display: flex; gap: 5px; }
+    .chat-input-group input { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+    .close-btn { background: #e74c3c; margin-top: 5px; }
+    .alert-msg { color: #d9534f; font-size: 0.85rem; display: none; margin-top: 5px; }
+  </style>
+</head>
+<body>
+
+  <!-- STEP 1: RESTRICTED ACCESS SCREEN -->
+  <div class="access-container" id="accessScreen">
+    <h2>🤝 Buddy Up</h2>
+    <span class="badge-private">Private Demo</span>
+    <p>This is a restricted educational prototype. Enter your invitation access code to enter.</p>
+    <input type="text" id="accessKeyInput" class="access-input" placeholder="Enter Access Code (e.g. BUDDY-2026)">
+    <div id="accessError" class="error-access">❌ Invalid Code. Only authorized users can access.</div>
+    <button class="btn" onclick="verifyAccess()">Enter App</button>
+  </div>
+
+  <!-- STEP 2: MAIN APP SCREEN -->
+  <div class="app-screen" id="appScreen">
+    <header>
+      <h1>🤝 Buddy Up</h1>
+      <p>Connect safely with invited peers in your area!</p>
+    </header>
+
+    <main class="card-container" id="profileContainer"></main>
+  </div>
+
+  <!-- Chat Modal -->
+  <div class="modal" id="chatModal">
+    <div class="modal-content">
+      <h3 id="chatTitle">Chat</h3>
+      <div class="chat-box" id="chatBox"></div>
+      <div id="alertMsg" class="alert-msg">🚨 Message blocked: Inappropriate behavior/bullying detected and reported automatically.</div>
+      <div class="chat-input-group">
+        <input type="text" id="chatInput" placeholder="Type a message...">
+        <button class="btn" style="width:auto;" onclick="sendMessage()">Send</button>
+      </div>
+      <button class="btn close-btn" onclick="closeChat()">Close</button>
+    </div>
+  </div>
+
+  <script>
+    // Valid Access Keys (Simulating Invited Users Only)
+    const validKeys = ["BUDDY-2026", "SCHOOL-PROJECT", "GUEST-USER"];
+
+    // Current Logged-in User (Simulation)
+    const currentUser = {
+      name: "Student Account",
+      age: 15,
+      city: "São Paulo",
+      state: "SP",
+      country: "Brazil"
+    };
+
+    // Invited Profiles
+    const profiles = [
+      {
+        id: 1,
+        name: "Lucas Silva",
+        age: 16,
+        bio: "Love PC gaming, skateboarding, and listening to 90s rock.",
+        location: "São Paulo, SP - Brazil",
+        avatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150"
+      },
+      {
+        id: 2,
+        name: "Mariana Costa",
+        age: 15,
+        bio: "Passionate about fantasy books, painting, and learning new languages.",
+        location: "Campinas, SP - Brazil",
+        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150"
+      },
+      {
+        id: 3,
+        name: "Gabriel Santos",
+        age: 22, // Large age gap
+        bio: "Software developer and tech enthusiast.",
+        location: "Rio de Janeiro, RJ - Brazil",
+        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150"
+      }
+    ];
+
+    // Forbidden words for automatic bullying detector
+    const forbiddenWords = ["ugly", "stupid", "loser", "hate", "idiot", "trash", "dumb"];
+
+    let activeProfile = null;
+
+    // Verify Access Key Function
+    function verifyAccess() {
+      const inputCode = document.getElementById('accessKeyInput').value.trim().toUpperCase();
+      const errorMsg = document.getElementById('accessError');
+
+      if (validKeys.includes(inputCode)) {
+        document.getElementById('accessScreen').style.display = 'none';
+        document.getElementById('appScreen').style.display = 'flex';
+        renderProfiles();
+      } else {
+        errorMsg.style.display = 'block';
+      }
+    }
+
+    // Render Profiles
+    function renderProfiles() {
+      const container = document.getElementById('profileContainer');
+      container.innerHTML = '';
+      profiles.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'profile-card';
+        card.innerHTML = `
+          <div>
+            <img src="${p.avatar}" alt="${p.name}" class="profile-img">
+            <div class="profile-name">${p.name}, ${p.age}</div>
+            <div class="profile-info">📍 ${p.location}</div>
+            <div class="profile-bio">"${p.bio}"</div>
+          </div>
+          <button class="btn" onclick="openChat(${p.id})">Send Message</button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Open Chat Window with age validation
+    function openChat(profileId) {
+      const profile = profiles.find(p => p.id === profileId);
+      
+      // Safety rule: maximum age gap of 3 years
+      const ageDifference = Math.abs(currentUser.age - profile.age);
+      if (ageDifference > 3) {
+        alert(`🔒 Safety Guard: The age gap between you (${currentUser.age} years old) and ${profile.name} (${profile.age} years old) is too large to start a conversation.`);
+        return;
+      }
+
+      activeProfile = profile;
+      document.getElementById('chatTitle').innerText = `Chat with ${profile.name}`;
+      document.getElementById('chatBox').innerHTML = `<p style="color:#888;"><i>Start of a safe conversation...</i></p>`;
+      document.getElementById('chatModal').style.display = 'flex';
+      document.getElementById('alertMsg').style.display = 'none';
+    }
+
+    // Close Chat
+    function closeChat() {
+      document.getElementById('chatModal').style.display = 'none';
+    }
+
+    // Send message and check for Bullying
+    function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const chatBox = document.getElementById('chatBox');
+      const alertMsg = document.getElementById('alertMsg');
+      const messageText = input.value.trim().toLowerCase();
+
+      if (!messageText) return;
+
+      // Bullying Detection
+      const containsBullying = forbiddenWords.some(word => messageText.includes(word));
+
+      if (containsBullying) {
+        alertMsg.style.display = 'block';
+      } else {
+        alertMsg.style.display = 'none';
+        const msgDiv = document.createElement('div');
+        msgDiv.style.margin = '5px 0';
+        msgDiv.innerHTML = `<b>You:</b> ${input.value}`;
+        chatBox.appendChild(msgDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+
+      input.value = '';
+    }
+  </script>
+</body>
+</html>
