@@ -1,212 +1,299 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Buddy Up - Private Demo</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: #f4f6f9; color: #333; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-    
-    /* Login / Access Screen */
-    .access-container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 100%; margin-top: 50px; }
-    .access-container h2 { color: #4A90E2; margin-bottom: 10px; }
-    .access-container p { font-size: 0.9rem; color: #666; margin-bottom: 20px; }
-    .access-input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 15px; font-size: 1rem; text-align: center; }
-    .error-access { color: #e74c3c; font-size: 0.85rem; display: none; margin-bottom: 10px; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buddy Up - Safe Connections</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--p:#6366f1;--p2:#4338ca;--pink:#ec4899;--dark:#1f2937;--mut:#6b7280;--red:#ef4444;--green:#10b981}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif}
+body{background:#f1f2f9;color:var(--dark);min-height:100vh;display:flex;flex-direction:column;align-items:center}
+.btn{background:var(--p);color:#fff;border:none;padding:11px 16px;border-radius:10px;cursor:pointer;font-weight:600;font-size:.95rem;transition:.2s;flex:1}
+.btn:hover{background:var(--p2);transform:translateY(-1px)}
+.btn.sec{background:#e5e7eb;color:var(--dark)}.btn.sec:hover{background:#d1d5db}
+.btn.dis{background:#e5e7eb;color:#9ca3af;cursor:not-allowed;transform:none}
+.btn.warn{background:#fee2e2;color:var(--red)}.btn.warn:hover{background:#fecaca}
 
-    /* App Screen (Hidden by default) */
-    .app-screen { display: none; width: 100%; max-width: 1000px; flex-direction: column; align-items: center; }
-    header { text-align: center; margin-bottom: 25px; }
-    header h1 { color: #4A90E2; font-size: 2.2rem; }
-    header p { color: #666; font-size: 1rem; margin-top: 5px; }
+/* TELA INICIAL */
+#accessScreen{position:fixed;inset:0;z-index:2000;overflow:auto;display:flex;align-items:center;justify-content:center;gap:60px;padding:30px;flex-wrap:wrap;
+background:linear-gradient(120deg,#4f46e5,#7c3aed,#db2777,#4f46e5);background-size:300% 300%;animation:bg 14s ease infinite;color:#fff}
+@keyframes bg{50%{background-position:100% 50%}}
+.blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.35;animation:fl 9s ease-in-out infinite;pointer-events:none}
+.b1{width:320px;height:320px;background:#22d3ee;top:-80px;left:-60px}.b2{width:380px;height:380px;background:#f472b6;bottom:-120px;right:-80px;animation-delay:-4s}
+@keyframes fl{50%{transform:translate(30px,40px) scale(1.1)}}
+.hero{max-width:500px;position:relative;z-index:1}
+.hero .logo{font-size:1.1rem;font-weight:800;background:rgba(255,255,255,.18);display:inline-block;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-size:clamp(2.2rem,5vw,3.4rem);line-height:1.1;font-weight:800;margin-bottom:16px}
+.hero h1 span{background:linear-gradient(90deg,#fde68a,#fbcfe8);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{font-size:1.05rem;opacity:.92;line-height:1.6;margin-bottom:22px}
+.feats{display:flex;flex-wrap:wrap;gap:10px}
+.feats span{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);padding:8px 14px;border-radius:30px;font-size:.85rem;font-weight:600;backdrop-filter:blur(6px)}
+.chips{display:flex;margin-top:26px}
+.chips i{width:44px;height:44px;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:1.3rem;margin-right:-10px}
+.chips b{margin-left:22px;align-self:center;font-size:.9rem}
+.access-container{position:relative;z-index:1;background:rgba(255,255,255,.96);color:var(--dark);padding:38px;border-radius:24px;box-shadow:0 25px 50px rgba(0,0,0,.3);text-align:center;width:min(400px,92vw)}
+.access-container h2{font-size:1.6rem;color:var(--p);margin-bottom:8px}
+.badge-private{background:#fee2e2;color:var(--red);padding:4px 12px;border-radius:20px;font-size:.72rem;font-weight:700;display:inline-block;margin-bottom:14px}
+.access-container p{color:var(--mut);font-size:.9rem}
+.access-input{width:100%;padding:14px;border:2px solid #e5e7eb;border-radius:12px;margin:16px 0;font-size:1rem;text-align:center;outline:none;transition:.2s}
+.access-input:focus{border-color:var(--p);box-shadow:0 0 0 4px #e0e7ff}
+.error-access{color:var(--red);font-size:.85rem;display:none;margin-bottom:14px}
+.access-container .btn{width:100%;padding:14px;background:linear-gradient(90deg,var(--p),var(--pink))}
 
-    .badge-private { background-color: #e74c3c; color: white; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; display: inline-block; margin-bottom: 10px; }
+/* APP */
+.app-screen{display:none;width:100%;max-width:1200px;padding:24px 20px 50px;flex-direction:column;gap:22px}
+.app-screen.active{display:flex}
+.app-header{background:linear-gradient(120deg,#4f46e5,#7c3aed,#db2777);color:#fff;padding:26px;border-radius:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px}
+.app-header h1{font-size:1.7rem}.app-header p{opacity:.9;font-size:.95rem}
+.me{background:rgba(255,255,255,.18);padding:8px 14px;border-radius:30px;font-size:.88rem;font-weight:600}
+.controls{background:#fff;padding:16px;border-radius:16px;box-shadow:0 4px 10px rgba(0,0,0,.05);display:flex;flex-wrap:wrap;gap:12px}
+.controls input,.controls select{padding:10px 14px;border:1px solid #d1d5db;border-radius:10px;font-size:.95rem;outline:none;flex:1;min-width:170px}
+.controls input:focus,.controls select:focus{border-color:var(--p)}
+.count{color:var(--mut);font-size:.9rem;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:20px}
+.card{background:#fff;border-radius:20px;box-shadow:0 4px 12px rgba(0,0,0,.06);padding:22px;display:flex;flex-direction:column;align-items:center;text-align:center;transition:.2s;cursor:pointer}
+.card:hover{transform:translateY(-5px);box-shadow:0 14px 26px rgba(79,70,229,.18)}
+.av{width:84px;height:84px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2.4rem;border:4px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,.15);flex-shrink:0}
+.card .av{margin-bottom:10px}
+.nm{font-size:1.15rem;font-weight:700}.inf{font-size:.85rem;color:var(--mut);margin:4px 0 8px}
+.aff{font-size:.75rem;font-weight:700;color:var(--green);background:#d1fae5;padding:3px 10px;border-radius:12px;margin-bottom:10px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:14px}
+.tag{background:#eef2ff;color:var(--p);padding:4px 10px;border-radius:12px;font-size:.75rem;font-weight:600}
+.tag.hit{background:var(--p);color:#fff}
+.acts{display:flex;gap:10px;width:100%;margin-top:auto}
+.empty{grid-column:1/-1;text-align:center;color:var(--mut);padding:40px}
 
-    .card-container { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; width: 100%; }
-    .profile-card { background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 280px; padding: 20px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; }
-    .profile-img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin: 0 auto 15px; border: 3px solid #4A90E2; }
-    .profile-name { font-size: 1.3rem; font-weight: bold; color: #2C3E50; }
-    .profile-info { font-size: 0.85rem; color: #7F8C8D; margin-bottom: 10px; }
-    .profile-bio { font-size: 0.95rem; color: #555; margin-bottom: 15px; line-height: 1.4; }
-    
-    .btn { background-color: #4A90E2; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; width: 100%; }
-    .btn:hover { background-color: #357ABD; }
-
-    /* Chat Modal */
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
-    .modal-content { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; display: flex; flex-direction: column; gap: 10px; }
-    .chat-box { height: 200px; border: 1px solid #ddd; padding: 10px; overflow-y: auto; border-radius: 6px; background: #fafafa; font-size: 0.9rem; }
-    .chat-input-group { display: flex; gap: 5px; }
-    .chat-input-group input { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
-    .close-btn { background: #e74c3c; margin-top: 5px; }
-    .alert-msg { color: #d9534f; font-size: 0.85rem; display: none; margin-top: 5px; }
-  </style>
+/* MODAIS */
+.modal{display:none;position:fixed;inset:0;background:rgba(15,23,42,.6);backdrop-filter:blur(4px);justify-content:center;align-items:center;z-index:3000;padding:14px}
+.mc{background:#fff;border-radius:22px;width:100%;max-width:480px;max-height:92vh;overflow:auto;box-shadow:0 25px 50px rgba(0,0,0,.35)}
+.mc.chat{padding:26px;display:flex;flex-direction:column;gap:14px}
+.cover{height:120px;position:relative}
+.pbody{padding:0 26px 26px;margin-top:-50px;display:flex;flex-direction:column;gap:18px}
+.phead{display:flex;flex-direction:column;align-items:center;text-align:center}
+.phead .av{width:104px;height:104px;font-size:3rem}
+.phead h2{margin-top:8px;font-size:1.4rem}
+.ver{color:var(--green);font-size:.8rem;font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stats div{background:#f5f6ff;border-radius:12px;padding:10px;text-align:center}
+.stats b{display:block;font-size:1.05rem;color:var(--p)}.stats small{color:var(--mut);font-size:.72rem}
+.sec h4{font-size:.8rem;text-transform:uppercase;letter-spacing:.6px;color:var(--mut);margin-bottom:8px}
+.sec p{font-size:.95rem;color:#4b5563;line-height:1.5}
+.favs{display:grid;gap:8px}
+.fav{display:flex;gap:10px;align-items:center;background:#f9fafb;border-radius:12px;padding:10px 12px;font-size:.9rem}
+.fav span{font-size:1.3rem}.fav small{display:block;color:var(--mut);font-size:.72rem}
+.safe{background:#ecfdf5;color:#065f46;border-radius:12px;padding:10px 12px;font-size:.8rem;line-height:1.4}
+.safe.lock{background:#fef3c7;color:#92400e}
+.row{display:flex;gap:10px}
+.chat-box{height:230px;border:1px solid #e5e7eb;padding:12px;overflow-y:auto;border-radius:10px;background:#fafafa;font-size:.9rem}
+.cig{display:flex;gap:8px}.cig input{flex:1;padding:10px;border:1px solid #d1d5db;border-radius:10px}
+.alert-msg{color:var(--red);background:#fee2e2;padding:8px;border-radius:8px;font-size:.85rem;display:none}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#111827;color:#fff;padding:12px 20px;border-radius:30px;font-size:.9rem;display:none;z-index:5000}
+</style>
 </head>
 <body>
 
-  <!-- STEP 1: RESTRICTED ACCESS SCREEN -->
-  <div class="access-container" id="accessScreen">
-    <h2>🤝 Buddy Up</h2>
-    <span class="badge-private">Private Demo</span>
-    <p>This is a restricted educational prototype. Enter your invitation access code to enter.</p>
-    <input type="text" id="accessKeyInput" class="access-input" placeholder="Enter Access Code (e.g. BUDDY-2026)">
-    <div id="accessError" class="error-access">❌ Invalid Code. Only authorized users can access.</div>
-    <button class="btn" onclick="verifyAccess()">Enter App</button>
-  </div>
-
-  <!-- STEP 2: MAIN APP SCREEN -->
-  <div class="app-screen" id="appScreen">
-    <header>
-      <h1>🤝 Buddy Up</h1>
-      <p>Connect safely with invited peers in your area!</p>
-    </header>
-
-    <main class="card-container" id="profileContainer"></main>
-  </div>
-
-  <!-- Chat Modal -->
-  <div class="modal" id="chatModal">
-    <div class="modal-content">
-      <h3 id="chatTitle">Chat</h3>
-      <div class="chat-box" id="chatBox"></div>
-      <div id="alertMsg" class="alert-msg">🚨 Message blocked: Inappropriate behavior/bullying detected and reported automatically.</div>
-      <div class="chat-input-group">
-        <input type="text" id="chatInput" placeholder="Type a message...">
-        <button class="btn" style="width:auto;" onclick="sendMessage()">Send</button>
-      </div>
-      <button class="btn close-btn" onclick="closeChat()">Close</button>
+<!-- TELA INICIAL -->
+<div id="accessScreen">
+  <div class="blob b1"></div><div class="blob b2"></div>
+  <div class="hero">
+    <div class="logo">🤝 Buddy Up</div>
+    <h1>Make real friends, <span>safely.</span></h1>
+    <p>Meet people your age who share your interests: games, music, art, sports and much more.</p>
+    <div class="feats"><span>🔒 Age-protected chat</span><span>🛡️ Anti-bullying filter</span><span>🚩 One-click reporting</span></div>
+    <div class="chips">
+      <i style="background:#fde68a">🎮</i><i style="background:#fbcfe8">🎨</i><i style="background:#a7f3d0">📚</i><i style="background:#bfdbfe">🎵</i><i style="background:#ddd6fe">⚽</i>
+      <b>+ 11 profiles waiting for you</b>
     </div>
   </div>
+  <div class="access-container">
+    <h2>Welcome!</h2>
+    <span class="badge-private">PRIVATE DEMO</span>
+    <p>Enter your invite code to join.</p>
+    <input type="text" id="accessKeyInput" class="access-input" placeholder="e.g. BUDDY-2026">
+    <div id="accessError" class="error-access">❌ Invalid code. Use BUDDY-2026, SCHOOL-PROJECT or GUEST-USER.</div>
+    <button class="btn" onclick="verifyAccess()">Enter Platform →</button>
+  </div>
+</div>
 
-  <script>
-    // Valid Access Keys (Simulating Invited Users Only)
-    const validKeys = ["BUDDY-2026", "SCHOOL-PROJECT", "GUEST-USER"];
+<!-- APP -->
+<div class="app-screen" id="appScreen">
+  <header class="app-header">
+    <div><h1>🤝 Buddy Up</h1><p>Find new friends safely in your area!</p></div>
+    <span class="me" id="userDisplayInfo"></span>
+  </header>
+  <section class="controls">
+    <input type="text" id="searchInput" placeholder="🔍 Search by name..." oninput="filterProfiles()">
+    <select id="interestFilter" onchange="filterProfiles()">
+      <option value="">All Interests</option>
+      <option>Games</option><option>Reading</option><option>Music</option><option>Sports</option><option>Technology</option><option>Art</option><option>Languages</option>
+    </select>
+    <select id="ageFilter" onchange="filterProfiles()">
+      <option value="">All Ages</option><option value="13-15">13 to 15 years</option><option value="16-18">16 to 18 years</option><option value="19+">19+ years</option>
+    </select>
+  </section>
+  <div class="count" id="countInfo"></div>
+  <main class="grid" id="profileContainer"></main>
+</div>
 
-    // Current Logged-in User (Simulation)
-    const currentUser = {
-      name: "Student Account",
-      age: 15,
-      city: "São Paulo",
-      state: "SP",
-      country: "Brazil"
-    };
+<!-- PERFIL DETALHADO -->
+<div class="modal" id="profileModal" onclick="if(event.target===this)closeProfileModal()"><div class="mc" id="profileBody"></div></div>
 
-    // Invited Profiles
-    const profiles = [
-      {
-        id: 1,
-        name: "Lucas Silva",
-        age: 16,
-        bio: "Love PC gaming, skateboarding, and listening to 90s rock.",
-        location: "São Paulo, SP - Brazil",
-        avatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150"
-      },
-      {
-        id: 2,
-        name: "Mariana Costa",
-        age: 15,
-        bio: "Passionate about fantasy books, painting, and learning new languages.",
-        location: "Campinas, SP - Brazil",
-        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150"
-      },
-      {
-        id: 3,
-        name: "Gabriel Santos",
-        age: 22, // Large age gap
-        bio: "Software developer and tech enthusiast.",
-        location: "Rio de Janeiro, RJ - Brazil",
-        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150"
-      }
-    ];
+<!-- CHAT -->
+<div class="modal" id="chatModal">
+  <div class="mc chat">
+    <h3 id="chatTitle">Chat</h3>
+    <div class="chat-box" id="chatBox"></div>
+    <div id="alertMsg" class="alert-msg">🚨 Message blocked: inappropriate or offensive behavior detected.</div>
+    <div class="cig"><input type="text" id="chatInput" placeholder="Write a message..."><button class="btn" style="flex:none" onclick="sendMessage()">Send</button></div>
+    <button class="btn sec" onclick="closeChat()">Close Chat</button>
+  </div>
+</div>
+<div id="toast"></div>
 
-    // Forbidden words for automatic bullying detector
-    const forbiddenWords = ["ugly", "stupid", "loser", "hate", "idiot", "trash", "dumb"];
+<script>
+const validKeys=["BUDDY-2026","SCHOOL-PROJECT","GUEST-USER"];
+const me={name:"You (Student)",age:15,interests:["Games","Music","Technology"]};
+const forbidden=["boring","ugly","idiot","hate you","trash","stupid","dumb","loser"];
 
-    let activeProfile = null;
+// Profiles: city only (no address, school or contacts) to protect minors
+const profiles=[
+{id:1,name:"Lucas Silva",age:16,city:"São Paulo, SP",e:"🎮",c:["#6366f1","#06b6d4"],interests:["Games","Music","Sports"],since:"Jan 2025",
+ bio:"Passionate about PC games, skateboarding and 90s rock. Looking for people to play online with!",
+ fav:[["🎮","Favorite game","Strategy and RPG games"],["🎵","Current sound","Classic 90s rock"],["🛹","Hobby","Skating on weekends"]],
+ looking:"A team to play with at night and swap skate tips.",fun:"Built his own PC from used parts.",langs:["Portuguese","English"],avail:"Evenings and weekends",badges:["🏅 Gamer","🛹 Skater"]},
+{id:2,name:"Mariana Costa",age:15,city:"Campinas, SP",e:"📚",c:["#ec4899","#f59e0b"],interests:["Reading","Art","Languages"],since:"Mar 2025",
+ bio:"I love fantasy books, watercolor painting and learning new languages in my spare time.",
+ fav:[["📚","Favorite genre","Epic fantasy"],["🎨","Technique","Watercolor"],["🗣️","Learning","French and Spanish"]],
+ looking:"A book club and language exchange partners.",fun:"Has read the same trilogy 4 times.",langs:["Portuguese","English","Spanish (basic)"],avail:"Weekday afternoons",badges:["📖 Reader","🎨 Artist"]},
+{id:3,name:"Gabriel Santos",age:22,city:"Rio de Janeiro, RJ",e:"💻",c:["#0ea5e9","#6366f1"],interests:["Technology","Games"],since:"Feb 2025",
+ bio:"Software developer, tech enthusiast and coffee lover.",
+ fav:[["💻","Language","JavaScript and Python"],["🎮","Favorite game","Indies and puzzles"],["☕","Guilty pleasure","Filtered coffee"]],
+ looking:"Other adults to talk tech with.",fun:"Wrote his first program at age 12.",langs:["Portuguese","English"],avail:"Evenings",badges:["💻 Dev"]},
+{id:4,name:"Beatriz Lima",age:15,city:"São Paulo, SP",e:"🏀",c:["#f97316","#ef4444"],interests:["Sports","Technology","Music"],since:"Apr 2025",
+ bio:"I play basketball at school and love listening to podcasts about science and astronomy.",
+ fav:[["🏀","Sport","Basketball (point guard)"],["🎧","Podcast","Science and astronomy"],["🎵","Current sound","Pop and indie"]],
+ looking:"Friends to train with and talk about space.",fun:"Has a basic telescope and has seen Saturn's rings.",langs:["Portuguese","English"],avail:"Afternoons and Saturdays",badges:["🏀 Athlete","🔭 Curious"]},
+{id:5,name:"Rafael Alves",age:14,city:"Santo André, SP",e:"✏️",c:["#10b981","#3b82f6"],interests:["Art","Technology","Games"],since:"May 2025",
+ bio:"I like drawing manga, playing chess and learning Python programming.",
+ fav:[["✏️","Drawing","Manga and original characters"],["♟️","Game","Chess"],["🐍","Learning","Basic Python"]],
+ looking:"Someone who likes drawing or coding together.",fun:"Has created 3 characters with full backstories.",langs:["Portuguese"],avail:"Afternoons and weekends",badges:["✏️ Drawer","♟️ Chess player"]},
+{id:6,name:"Sofia Ribeiro",age:14,city:"Sorocaba, SP",e:"🎸",c:["#8b5cf6","#ec4899"],interests:["Music","Art","Languages"],since:"Jun 2025",
+ bio:"I've played guitar for 2 years, make digital illustrations and I'm learning Japanese through songs.",
+ fav:[["🎸","Instrument","Acoustic guitar"],["🖌️","Art","Digital illustration"],["🗣️","Learning","Japanese"]],
+ looking:"Partners to play music, draw and practice languages.",fun:"Wrote a song about her dog.",langs:["Portuguese","English","Japanese (beginner)"],avail:"Afternoons",badges:["🎸 Music","🌏 Polyglot"]},
+{id:7,name:"Pedro Henrique",age:17,city:"Guarulhos, SP",e:"⚽",c:["#16a34a","#facc15"],interests:["Sports","Games"],since:"Jan 2025",
+ bio:"I play futsal in my neighborhood and enjoy soccer and racing games with friends.",
+ fav:[["⚽","Sport","Futsal (starter)"],["🎮","Favorite game","Soccer and racing"],["🍕","Food","Pizza, of course"]],
+ looking:"People to play online and organize matches.",fun:"Never lost a neighborhood final. According to him.",langs:["Portuguese"],avail:"Evenings and Sundays",badges:["⚽ Star player","🏆 Team leader"]},
+{id:8,name:"Júlia Menezes",age:16,city:"Osasco, SP",e:"🎧",c:["#d946ef","#6366f1"],interests:["Reading","Music","Languages"],since:"Feb 2025",
+ bio:"K-pop fan, studying Korean and writing a sci-fi fanfic.",
+ fav:[["🎧","Current sound","K-pop and pop"],["✍️","Writing","Science fiction"],["🗣️","Learning","Korean"]],
+ looking:"Friends to study languages and swap reads.",fun:"Memorized the Korean alphabet in 2 days.",langs:["Portuguese","English","Korean (beginner)"],avail:"Evenings",badges:["✍️ Writer","🌏 Polyglot"]},
+{id:9,name:"Davi Oliveira",age:13,city:"São Paulo, SP",e:"🤖",c:["#06b6d4","#8b5cf6"],interests:["Games","Technology","Art"],since:"Aug 2025",
+ bio:"I build worlds in Minecraft, study robotics at school and like drawing robots.",
+ fav:[["⛏️","Favorite game","Minecraft"],["🤖","Project","Programmable Lego robot"],["✏️","Drawing","Robots and spaceships"]],
+ looking:"Friends to build and invent with.",fun:"Wants to build a robot that tidies his room.",langs:["Portuguese"],avail:"Afternoons",badges:["🤖 Inventor","⛏️ Builder"]},
+{id:10,name:"Clara Nogueira",age:18,city:"Santos, SP",e:"📷",c:["#0ea5e9","#14b8a6"],interests:["Art","Sports","Reading"],since:"Jan 2025",
+ bio:"Photography, skateboarding and travel books. Always with a camera in my backpack.",
+ fav:[["📷","Hobby","Street photography"],["🛹","Sport","Skateboarding"],["📚","Reading","Travel books"]],
+ looking:"Creative people for outings and photo projects.",fun:"Has photographed 100 different sunsets.",langs:["Portuguese","English"],avail:"Weekends",badges:["📷 Photographer","🛹 Skater"]},
+{id:11,name:"Thiago Martins",age:15,city:"Jundiaí, SP",e:"🎹",c:["#f43f5e","#f59e0b"],interests:["Technology","Music","Sports"],since:"Mar 2025",
+ bio:"I produce beats on my computer, play volleyball and love making playlists for everything.",
+ fav:[["🎹","Hobby","Beat production"],["🏐","Sport","Volleyball (setter)"],["🎵","Current sound","Lo-fi and electronic"]],
+ looking:"Anyone who wants to swap beats or form a volleyball team.",fun:"Has a playlist for every mood of the week.",langs:["Portuguese","English"],avail:"Afternoons and Saturdays",badges:["🎹 Producer","🏐 Athlete"]}
+];
 
-    // Verify Access Key Function
-    function verifyAccess() {
-      const inputCode = document.getElementById('accessKeyInput').value.trim().toUpperCase();
-      const errorMsg = document.getElementById('accessError');
+let active=null,blocked=new Set();
+const $=id=>document.getElementById(id);
+const av=(p,s="")=>`<div class="av" style="background:linear-gradient(135deg,${p.c[0]},${p.c[1]});${s}">${p.e}</div>`;
+const common=p=>p.interests.filter(i=>me.interests.includes(i));
+const affinity=p=>Math.round(common(p).length/new Set([...me.interests,...p.interests]).size*100);
+const blockedByAge=p=>Math.abs(me.age-p.age)>3;
+function toast(t){const e=$('toast');e.textContent=t;e.style.display='block';clearTimeout(e._t);e._t=setTimeout(()=>e.style.display='none',2600)}
 
-      if (validKeys.includes(inputCode)) {
-        document.getElementById('accessScreen').style.display = 'none';
-        document.getElementById('appScreen').style.display = 'flex';
-        renderProfiles();
-      } else {
-        errorMsg.style.display = 'block';
-      }
-    }
+function verifyAccess(){
+  const v=$('accessKeyInput').value.trim().toUpperCase();
+  if(validKeys.includes(v)){
+    $('accessScreen').style.display='none';$('appScreen').classList.add('active');
+    $('userDisplayInfo').innerText=`👤 ${me.name} · ${me.age} years old`;
+    filterProfiles();
+  }else $('accessError').style.display='block';
+}
+$('accessKeyInput').addEventListener('keydown',e=>{if(e.key==='Enter')verifyAccess()});
+$('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter')sendMessage()});
 
-    // Render Profiles
-    function renderProfiles() {
-      const container = document.getElementById('profileContainer');
-      container.innerHTML = '';
-      profiles.forEach(p => {
-        const card = document.createElement('div');
-        card.className = 'profile-card';
-        card.innerHTML = `
-          <div>
-            <img src="${p.avatar}" alt="${p.name}" class="profile-img">
-            <div class="profile-name">${p.name}, ${p.age}</div>
-            <div class="profile-info">📍 ${p.location}</div>
-            <div class="profile-bio">"${p.bio}"</div>
-          </div>
-          <button class="btn" onclick="openChat(${p.id})">Send Message</button>
-        `;
-        container.appendChild(card);
-      });
-    }
+function renderProfiles(data){
+  const c=$('profileContainer');
+  $('countInfo').innerText=`${data.length} profile(s) found`;
+  if(!data.length){c.innerHTML='<p class="empty">No profiles found with the selected filters.</p>';return}
+  c.innerHTML='';
+  data.forEach(p=>{
+    const cm=common(p),d=document.createElement('div');
+    d.className='card';d.onclick=()=>openProfileModal(p.id);
+    d.innerHTML=`${av(p)}<div class="nm">${p.name}, ${p.age}</div><div class="inf">📍 ${p.city}</div>
+    ${cm.length?`<div class="aff">✨ ${affinity(p)}% match</div>`:''}
+    <div class="tags">${p.interests.map(i=>`<span class="tag ${cm.includes(i)?'hit':''}">${i}</span>`).join('')}</div>
+    <div class="acts"><button class="btn sec" onclick="event.stopPropagation();openProfileModal(${p.id})">View profile</button>
+    <button class="btn" onclick="event.stopPropagation();openChat(${p.id})">Message</button></div>`;
+    c.appendChild(d);
+  });
+}
 
-    // Open Chat Window with age validation
-    function openChat(profileId) {
-      const profile = profiles.find(p => p.id === profileId);
-      
-      // Safety rule: maximum age gap of 3 years
-      const ageDifference = Math.abs(currentUser.age - profile.age);
-      if (ageDifference > 3) {
-        alert(`🔒 Safety Guard: The age gap between you (${currentUser.age} years old) and ${profile.name} (${profile.age} years old) is too large to start a conversation.`);
-        return;
-      }
+function filterProfiles(){
+  const s=$('searchInput').value.toLowerCase(),i=$('interestFilter').value,a=$('ageFilter').value;
+  renderProfiles(profiles.filter(p=>{
+    if(blocked.has(p.id))return false;
+    let ok=a===''||(a==='13-15'&&p.age<=15)||(a==='16-18'&&p.age>=16&&p.age<=18)||(a==='19+'&&p.age>=19);
+    return p.name.toLowerCase().includes(s)&&(i===''||p.interests.includes(i))&&ok;
+  }));
+}
 
-      activeProfile = profile;
-      document.getElementById('chatTitle').innerText = `Chat with ${profile.name}`;
-      document.getElementById('chatBox').innerHTML = `<p style="color:#888;"><i>Start of a safe conversation...</i></p>`;
-      document.getElementById('chatModal').style.display = 'flex';
-      document.getElementById('alertMsg').style.display = 'none';
-    }
+function openProfileModal(id){
+  const p=profiles.find(x=>x.id===id);if(!p)return;
+  const cm=common(p),lock=blockedByAge(p);
+  $('profileBody').innerHTML=`
+  <div class="cover" style="background:linear-gradient(135deg,${p.c[0]},${p.c[1]})"></div>
+  <div class="pbody">
+    <div class="phead">${av(p)}<h2>${p.name}, ${p.age}</h2><div class="inf">📍 ${p.city}</div><span class="ver">✔ Verified profile</span></div>
+    <div class="stats"><div><b>${cm.length?affinity(p)+'%':'—'}</b><small>Match</small></div><div><b>${cm.length}</b><small>In common</small></div><div><b>${p.since}</b><small>Member since</small></div></div>
+    <div class="sec"><h4>About me</h4><p>${p.bio}</p></div>
+    <div class="sec"><h4>Interests${cm.length?' (highlighted: yours)':''}</h4><div class="tags" style="justify-content:flex-start;margin:0">${p.interests.map(i=>`<span class="tag ${cm.includes(i)?'hit':''}">${i}</span>`).join('')}</div></div>
+    <div class="sec"><h4>Favorites</h4><div class="favs">${p.fav.map(f=>`<div class="fav"><span>${f[0]}</span><div><small>${f[1]}</small>${f[2]}</div></div>`).join('')}</div></div>
+    <div class="sec"><h4>Looking for</h4><p>${p.looking}</p></div>
+    <div class="sec"><h4>Fun fact</h4><p>💡 ${p.fun}</p></div>
+    <div class="sec"><h4>Languages & availability</h4><p>🗣️ ${p.langs.join(', ')}<br>🕒 ${p.avail}</p></div>
+    <div class="sec"><h4>Achievements</h4><div class="tags" style="justify-content:flex-start;margin:0">${p.badges.map(b=>`<span class="tag">${b}</span>`).join('')}</div></div>
+    <div class="safe ${lock?'lock':''}">${lock?`🔒 Chat unavailable: the age difference (${me.age} and ${p.age} years old) exceeds the safe limit of 3 years.`:'🛡️ This profile shows the city only. Never share your address, school, phone or social media in chat.'}</div>
+    <div class="row"><button class="btn ${lock?'dis':''}" onclick="${lock?'':`closeProfileModal();openChat(${p.id})`}">${lock?'🔒 Chat locked':'💬 Chat'}</button><button class="btn sec" onclick="closeProfileModal()">Close</button></div>
+    <div class="row"><button class="btn warn" onclick="toast('🚩 Report sent to moderation.')">🚩 Report</button><button class="btn warn" onclick="blockUser(${p.id})">🚫 Block</button></div>
+  </div>`;
+  $('profileModal').style.display='flex';$('profileBody').scrollTop=0;
+}
+function closeProfileModal(){$('profileModal').style.display='none'}
+function blockUser(id){blocked.add(id);closeProfileModal();filterProfiles();toast('🚫 Profile blocked.')}
 
-    // Close Chat
-    function closeChat() {
-      document.getElementById('chatModal').style.display = 'none';
-    }
+function openChat(id){
+  const p=profiles.find(x=>x.id===id);
+  if(blockedByAge(p)){alert(`🔒 Safety block: the age difference between you (${me.age} years old) and ${p.name} (${p.age} years old) exceeds the safe limit.`);return}
+  active=p;$('chatTitle').innerText=`Chatting with ${p.name}`;
+  $('chatBox').innerHTML='<p style="color:#888;text-align:center"><i>Start of a protected conversation...</i></p>';
+  $('chatModal').style.display='flex';$('alertMsg').style.display='none';
+}
+function closeChat(){$('chatModal').style.display='none'}
 
-    // Send message and check for Bullying
-    function sendMessage() {
-      const input = document.getElementById('chatInput');
-      const chatBox = document.getElementById('chatBox');
-      const alertMsg = document.getElementById('alertMsg');
-      const messageText = input.value.trim().toLowerCase();
-
-      if (!messageText) return;
-
-      // Bullying Detection
-      const containsBullying = forbiddenWords.some(word => messageText.includes(word));
-
-      if (containsBullying) {
-        alertMsg.style.display = 'block';
-      } else {
-        alertMsg.style.display = 'none';
-        const msgDiv = document.createElement('div');
-        msgDiv.style.margin = '5px 0';
-        msgDiv.innerHTML = `<b>You:</b> ${input.value}`;
-        chatBox.appendChild(msgDiv);
-        chatBox.scrollTop = chatBox.scrollHeight;
-      }
-
-      input.value = '';
-    }
-  </script>
+function sendMessage(){
+  const i=$('chatInput'),t=i.value.trim();if(!t)return;
+  if(forbidden.some(w=>t.toLowerCase().includes(w)))$('alertMsg').style.display='block';
+  else{
+    $('alertMsg').style.display='none';
+    const d=document.createElement('div');d.style.margin='8px 0';
+    const b=document.createElement('b');b.textContent='You: ';
+    d.append(b,document.createTextNode(t));   // textContent prevents HTML injection
+    $('chatBox').appendChild(d);$('chatBox').scrollTop=$('chatBox').scrollHeight;
+  }
+  i.value='';
+}
+</script>
 </body>
 </html>
